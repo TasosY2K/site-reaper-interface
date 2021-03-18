@@ -1,4 +1,4 @@
-# anastoli-front-end
+# site-reaper
 
 ## Project setup
 ```
