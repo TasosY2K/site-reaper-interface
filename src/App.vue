@@ -1,0 +1,172 @@
+<template>
+  <div>
+    <p id="header">Site Reaper Interface</p>
+    <p id="credits">Design by <a href="https://github.com/TasosY2K">leandev</a>, API by <a href="https://reaper.illicit.services/docs/" target="_blank">https://reaper.illicit.services/docs</a></p>
+    <input type="text" id="search-box" placeholder="Search machines" v-model="searchString">
+    <select id="search-type" v-model="exactSearch">
+      <option value="false">Normal Search</option>
+      <option value="true">Exact Search</option>
+    </select>
+    <button type="button" id="search-button" @click="this.getSearchData">Query</button>
+    <br>
+    <span id="not-found">{{ notFound }}</span>
+    <div id="card-container">
+      <div v-for="i in schoolData" :key="i">
+        <Card :info="i"/>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import axios from 'axios'
+import Card from './components/Card.vue'
+
+export default {
+  name: 'App',
+  components: {
+    Card
+  },
+  methods: {
+    getSearchData() {
+      if (this.searchString != "" && this.searchString != null) {
+        this.notFound = "Loading..."
+        this.schoolData = null
+        axios.get(`https://reaper.illicit.services/api/v1/hits/search?title=${this.searchString}&exact=${this.exactSearch}`).then(response => {
+          if (response.status == 200) {
+            if (response.data.length > 0) {
+              console.log(response.data);
+              this.schoolData = response.data
+              this.notFound = ""
+            } else {
+              this.notFound = "No machines found"
+            }
+          } else {
+            this.notFound = "No machines found"
+          }
+        });
+      } else {
+          this.notFound = "You must pass a search query"
+          this.schoolData = null
+      }
+    }
+  },
+  data () {
+    return {
+      exactSearch: false,
+      notFound: null,
+      searchString: null,
+      schoolData: null
+    }
+  }
+}
+</script>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@600&display=swap');
+
+#app {
+  font-family: 'Comfortaa', cursive;
+  text-align: center;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 0.5rem;
+}
+
+#header {
+  font-size: 2em;
+}
+
+#credits a {
+  text-decoration: none;
+  color: #FF2950;
+}
+
+#credits a:hover {
+  text-decoration: underline;
+}
+
+#card-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+#search-box {
+  width: 17em;
+  font-size: 1.1em;
+  font-family: 'Comfortaa', cursive;
+  padding: 0.6em;
+  background-color: #292929;
+  border-radius: 8px;
+  transition-duration: 0.3s;
+  border: none;
+  margin-bottom: 1rem;
+  color: #e9e9e9;
+}
+
+#search-box:focus {
+  outline: none;
+}
+
+#search-box:hover {
+  transform: translateY(-1px);
+  -webkit-box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+  box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+}
+
+#search-type {
+  transform: translateY(-0.2em);
+  margin-left: 0.4em;
+  font-size: 0.7em;
+  font-family: 'Comfortaa', cursive;
+  padding: 0.7em;
+  background-color: #292929;
+  border-radius: 8px;
+  transition-duration: 0.3s;
+  border: none;
+  margin-bottom: 1rem;
+  color: #e9e9e9;
+}
+
+
+#search-type:hover {
+  cursor: pointer;
+  -webkit-box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+  box-shadow: 0px 7px 15px -2px rgba(0,0,0,0.75);
+}
+
+#search-button {
+  margin-left: 0.4em;
+  font-size: 1.1em;
+  font-family: 'Comfortaa', cursive;
+  padding: 0.6em;
+  background-color: #FF2950;
+  border-radius: 8px;
+  transition-duration: 0.3s;
+  border: none;
+  margin-bottom: 1rem;
+  color: #e9e9e9;
+}
+
+#search-button:hover {
+  cursor: pointer;
+  background-color: #ff3a5e;
+  transform: translateY(-1px);
+  -webkit-box-shadow: 0px 7px 15px -2px rgba(255, 58, 94, 0.75);
+  -moz-box-shadow: 0px 7px 15px -2px rgba(255, 58, 94,0.75);
+  box-shadow: 0px 7px 15px -2px rgba(255, 58, 94,0.75);
+}
+
+#search-button:active {
+  transform: translateY(0px);
+  background-color: #FF2950;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+}
+</style>
