@@ -2,7 +2,7 @@
   <div>
     <p id="header">Site Reaper Interface</p>
     <p id="credits">Design by <a href="https://github.com/TasosY2K">leandev</a>, API by <a href="https://reaper.illicit.services/docs/" target="_blank">https://reaper.illicit.services/docs</a></p>
-    <input type="text" id="search-box" placeholder="Search machines" v-model="searchString">
+    <input type="text" id="search-box" placeholder="Search machines" v-model="searchString" @keyup.enter="this.getSearchData">
     <select id="search-type" v-model="exactSearch">
       <option value="false">Normal Search</option>
       <option value="true">Exact Search</option>
@@ -11,7 +11,7 @@
     <br>
     <span id="not-found">{{ notFound }}</span>
     <div id="card-container">
-      <div v-for="i in schoolData" :key="i">
+      <div v-for="i in searchData" :key="i">
         <Card :info="i"/>
       </div>
     </div>
@@ -31,12 +31,12 @@ export default {
     getSearchData() {
       if (this.searchString != "" && this.searchString != null) {
         this.notFound = "Loading..."
-        this.schoolData = null
+        this.searchData = null
         axios.get(`https://reaper.illicit.services/api/v1/hits/search?title=${this.searchString}&exact=${this.exactSearch}`).then(response => {
           if (response.status == 200) {
             if (response.data.length > 0) {
               console.log(response.data);
-              this.schoolData = response.data
+              this.searchData = response.data
               this.notFound = ""
             } else {
               this.notFound = "No machines found"
@@ -47,7 +47,7 @@ export default {
         });
       } else {
           this.notFound = "You must pass a search query"
-          this.schoolData = null
+          this.searchData = null
       }
     }
   },
@@ -56,7 +56,7 @@ export default {
       exactSearch: false,
       notFound: null,
       searchString: null,
-      schoolData: null
+      searchData: null
     }
   }
 }
